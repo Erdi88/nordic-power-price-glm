@@ -1,0 +1,26 @@
+# Raw data (~100 MB, not redistributed)
+data/raw/*
+!data/raw/.gitkeep
+
+# R / LaTeX build artefacts
+.Rhistory
+.RData
+.Rproj.user/
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+
+*:Zone.Identifier
+*:mshield
+.DS_Store

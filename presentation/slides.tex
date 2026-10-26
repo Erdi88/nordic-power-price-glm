@@ -1,0 +1,191 @@
+\documentclass[aspectratio=169, 11pt]{beamer}
+
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamerfont{frametitle}{size=\Large, series=\bfseries}
+\setbeamercolor{frametitle}{fg=blue!50!black}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[backend=biber, style=numeric, url=false, doi=false, isbn=false, eprint=false]{biblatex}
+\addbibresource{../references.bib}
+\graphicspath{{../figures/}}
+\input{../tables/numbers.tex}
+\newcommand{\eur}{EUR/MWh}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\title{What drives the hourly electricity price in NO1?}
+\subtitle{A Gaussian GLM with calendar effects, consumption and reservoir level}
+\author{Sondre Erdi Solbakken}
+\institute{STAT201 project}
+\date{October 2026}
+
+\begin{document}
+
+%------------------------------------------------------------
+\begin{frame}
+\titlepage
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Research question}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item Day-ahead price in NO1 (Oslo region), one price per hour
+\item NO1: much consumption, power mostly from hydro
+\item[]
+\item \textbf{Question:} how much of the hourly price is explained by hour, month, weekday, year, consumption and reservoir level? Which matter most?
+\item[]
+\item Hypothesis: demand matters, reservoir level even more
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=\textwidth]{fig_price_time.png}
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Data}
+\begin{itemize}
+\item My master thesis data: Nord Pool prices and consumption, NVE reservoir fill
+\item Hourly, \cleanStart{} to \cleanEnd{}: \textbf{$n = \nClean$ hours}
+\item Price in \eur{}, \nNonPos{} hours $\le 0$, max \maxPrice{}
+\end{itemize}
+\vspace{0.5em}
+\textbf{Preparation}
+\begin{itemize}
+\item \nMissingPrice{} forward-filled prices removed ($\pctRemoved$\% in total)
+\item Weekly reservoir value given to every hour of its ISO week
+\item Factors from local time; reference: hour 00, January, Monday, 2016
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Method: Gaussian GLM}
+\begin{itemize}
+\item Price is continuous and can be zero or negative\\
+$\Rightarrow$ not Poisson, binomial or Gamma; \textbf{normal} distribution
+\item Identity link = multiple linear regression, coefficients in \eur
+\end{itemize}
+\begin{align*}
+y_i = \bs{x}_i^T\bs{\beta} + e_i, \qquad e_i \sim N(0,\sigma^2)
+\end{align*}
+\vspace{-1em}
+\begin{center}
+\texttt{glm(price \textasciitilde{} hour + month + weekday + year + cons + reservoir,}\\
+\texttt{family = gaussian)}
+\end{center}
+\begin{itemize}
+\item Compare: drop-one $F$-test, AIC/BIC, $R^2$; VIF; residuals and ACF
+\item GAM (\texttt{mgcv}) if curves show up
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Key results}
+\begin{columns}[T]
+\begin{column}{0.64\textwidth}
+\includegraphics[width=\textwidth]{fig_effects.png}
+\end{column}
+\begin{column}{0.36\textwidth}
+\small
+\begin{itemize}
+\item $R^2 = \rTwo$, $\hat\sigma = \rse$ \eur
+\item Hour $\hMorning$: $+\bHourMorning$ vs midnight
+\item Sunday: $\bSun$ vs Monday
+\item 2021: $+\bYtwentyone$, 2022: $+\bYtwentytwo$ vs 2016
+\item \textbf{Reservoir +10 points: $\bResTen$}
+\item Consumption +1 GWh/h: $+\bCons$
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Which predictors matter most?}
+\centering
+Loss when one term is removed from the full model\\[0.8em]
+\begin{tabular}{lrr}
+\toprule
+Term removed & $\Delta R^2$ (\%-points) & $\Delta$AIC \\
+\midrule
+Year & \dRtwoYear & \dAICYear \\
+Month & \dRtwoMonth & \dAICMonth \\
+Reservoir & \dRtwoReservoir & \dAICReservoir \\
+Hour & \dRtwoHour & \dAICHour \\
+Weekday & \dRtwoWeekday & \dAICWeekday \\
+Consumption & \dRtwoConsumption & \dAICConsumption \\
+\bottomrule
+\end{tabular}\\[1em]
+\raggedright
+\begin{itemize}
+\item All $p < 0.001$ with $n = \nClean$: look at effect sizes
+\item Collinearity: month explains \auxResMonth\% of reservoir, \auxConsMonth\% of consumption
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Model fit and diagnostics}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\includegraphics[width=\textwidth]{fig_acf.png}
+\end{column}
+\begin{column}{0.45\textwidth}
+\small
+\begin{itemize}
+\item Lag-1 autocorrelation \acfOne, Durbin-Watson \dw
+\item Variance grows with price, heavy upper tail (2021/22)
+\item HAC SEs \hacRatioMin{} to \hacRatioMax{} times larger
+\item Reservoir: still clear
+\item \textbf{Consumption: $p = \pHacCons$}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{GAM: non-linear effects}
+\includegraphics[width=0.8\textwidth]{fig_gam.png}
+\begin{itemize}
+\item Price jumps above 7 GWh/h; reservoir effect strongest at the ends
+\item AIC $-\dAICGam$, $R^2$ \rTwo{} $\to$ \rTwoGam; same ranking of predictors
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{In plain words, and limitations}
+\textbf{In plain words}
+\begin{itemize}
+\item The year matters most: 2021/22 prices came from outside factors
+\item Fuller reservoirs, cheaper power: about \bResTenAbs{} \eur{} per 10 points
+\item Cheapest at night, most expensive around \hourMaxAt{} in the morning
+\item Usage adds little, except in extreme cold hours
+\end{itemize}
+\textbf{Limitations}
+\begin{itemize}
+\item Strong autocorrelation: usual $p$-values too optimistic
+\item Non-constant variance, crisis outliers
+\item Year factor describes, does not explain
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\begin{frame}{Conclusion}
+\begin{itemize}
+\item Gaussian GLM explains $R^2 = \rTwo$; year $\gg$ month $>$ reservoir $>$ consumption
+\item Reservoir effect robust to autocorrelation, consumption effect not; GAM: better fit, same conclusions
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=20]{Sources}
+\nocite{dobson2008glm, nordpool, nve, R, mgcvREML, sandwich, car, lmtest}
+\scriptsize
+\printbibliography[heading=none]
+\end{frame}
+
+\end{document}

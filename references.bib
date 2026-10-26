@@ -1,0 +1,106 @@
+% Sources for the STAT201 project.
+% Course book: as in my Assignment 2 references.bib.
+% Data: as described in the data files (no web addresses are given there).
+% R and packages: copied from citation() output, see tables/r_citations.bib.
+
+@book{dobson2008glm,
+  author    = {Dobson, Annette J. and Barnett, Adrian G.},
+  title     = {An Introduction to Generalized Linear Models},
+  edition   = {3rd},
+  publisher = {CRC Press},
+  location  = {Boca Raton, FL},
+  year      = {2008},
+  isbn      = {978-1-58488-950-2}
+}
+
+@misc{nordpool,
+  author = {{Nord Pool}},
+  title  = {Hourly day-ahead prices and consumption for the bidding zone {NO1}, 2016--2022},
+  note   = {Raw download used in my master thesis, file \texttt{nordpool\_2016-01-01\_2022-11-30.h5}. Prices in EUR/MWh, volumes in MWh}
+}
+
+@misc{nve,
+  author = {{NVE (Norges vassdrags- og energidirektorat)}},
+  title  = {Weekly reservoir filling degree (fyllingsgrad) for {NO1}},
+  note   = {Column \texttt{NO1\_Fyllingsgrad\_NVE} in my master thesis data set \texttt{dataset\_timeseries.csv}}
+}
+
+@Manual{R,
+  title = {R: A Language and Environment for Statistical Computing},
+  author = {{R Core Team}},
+  organization = {R Foundation for Statistical Computing},
+  address = {Vienna, Austria},
+  year = {2026},
+  url = {https://www.R-project.org/},
+}
+
+@Manual{datatable,
+  title = {data.table: Extension of `data.frame`},
+  author = {Tyson Barrett and Matt Dowle and Arun Srinivasan and Jan Gorecki and Michael Chirico and Toby Hocking and Benjamin Schwendinger and Ivan Krylov},
+  year = {2026},
+  note = {R package version 1.18.6.1},
+  url = {https://CRAN.R-project.org/package=data.table},
+  doi = {10.32614/CRAN.package.data.table},
+}
+
+@Manual{hdfr,
+  title = {hdf5r: Interface to the 'HDF5' Binary Data Format},
+  author = {Holger Hoefling and Mario Annau},
+  year = {2026},
+  note = {R package version 1.3.16},
+  url = {https://CRAN.R-project.org/package=hdf5r},
+  doi = {10.32614/CRAN.package.hdf5r},
+}
+
+@Book{car,
+  title = {An {R} Companion to Applied Regression},
+  edition = {Third},
+  author = {John Fox and Sanford Weisberg},
+  year = {2019},
+  publisher = {Sage},
+  address = {Thousand Oaks {CA}},
+  url = {https://www.john-fox.ca/Companion/},
+}
+
+@Article{lmtest,
+  title = {Diagnostic Checking in Regression Relationships},
+  author = {Achim Zeileis and Torsten Hothorn},
+  journal = {R News},
+  year = {2002},
+  volume = {2},
+  number = {3},
+  pages = {7--10},
+  url = {https://CRAN.R-project.org/doc/Rnews/},
+}
+
+@Article{sandwich,
+  title = {Econometric Computing with {HC} and {HAC} Covariance Matrix Estimators},
+  author = {Achim Zeileis},
+  journal = {Journal of Statistical Software},
+  year = {2004},
+  volume = {11},
+  number = {10},
+  pages = {1--17},
+  doi = {10.18637/jss.v011.i10},
+}
+
+@Article{mgcvREML,
+  title = {Fast stable restricted maximum likelihood and marginal 
+likelihood estimation of semiparametric generalized linear models},
+  journal = {Journal of the Royal Statistical Society (B)},
+  volume = {73},
+  number = {1},
+  pages = {3--36},
+  year = {2011},
+  author = {S. N. Wood},
+  doi = {10.1111/j.1467-9868.2010.00749.x},
+}
+
+@Book{mgcvBook,
+  title = {Generalized {A}dditive {M}odels: An Introduction with {R}},
+  year = {2017},
+  author = {S. N. Wood},
+  edition = {2},
+  publisher = {Chapman and Hall/CRC},
+}
+
